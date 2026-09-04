@@ -1,0 +1,76 @@
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    ContextTypes,
+    filters
+)
+
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        ["📝 تولید متن", "💡 ایده محتوا"],
+        ["🖼️ ساخت پوستر", "ℹ️ راهنما"]
+    ]
+
+    await update.message.reply_text(
+        "سلام 👋\n"
+        "به ربات هوشمند تولید محتوا خوش اومدی 🤖\n\n"
+        "یکی از گزینه‌های زیر رو انتخاب کن:",
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard,
+            resize_keyboard=True
+        )
+    )
+
+
+async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if text == "📝 تولید متن":
+        await update.message.reply_text(
+            "📝 موضوع متنت رو بفرست."
+        )
+
+    elif text == "💡 ایده محتوا":
+        await update.message.reply_text(
+            "💡 موضوعی که برایش ایده می‌خوای رو بفرست."
+        )
+
+    elif text == "🖼️ ساخت پوستر":
+        await update.message.reply_text(
+            "🖼️ بخش ساخت پوستر به‌زودی فعال میشه 🎨"
+        )
+
+    elif text == "ℹ️ راهنما":
+        await update.message.reply_text(
+            "🤖 راهنمای ربات\n\n"
+            "📝 تولید متن\n"
+            "💡 ایده محتوا\n"
+            "🖼️ ساخت پوستر"
+        )
+
+    elif "سلام" in text:
+        await update.message.reply_text(
+            "سلام 👋 خوش اومدی!"
+        )
+
+    else:
+        await update.message.reply_text(
+            "لطفاً از منوی ربات یکی از گزینه‌ها رو انتخاب کن."
+        )
+
+
+app = Application.builder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, message)
+)
+
+print("🤖 ربات در حال اجراست...")
+
+app.run_polling()
